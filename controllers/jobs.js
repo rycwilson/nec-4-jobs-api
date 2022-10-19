@@ -7,8 +7,9 @@ const getAllJobs = async (req, res) => {
 }
 
 const createJob = async (req, res) => {
-  const job = await job.create(req.body)
-  res.status(201).json({ job })
+  res.json(req.user)
+  // const job = await job.create(req.body)
+  // res.status(201).json({ job })
 }
 
 const getJob = async (req, res) => {

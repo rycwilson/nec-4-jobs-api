@@ -4,6 +4,7 @@ import connectDb from './config/db.js'
 import 'express-async-errors'
 import authRouter from './routes/auth.js'
 import jobsRouter from './routes/jobs.js'
+import authenticateUser from './middleware/auth.js'
 import notFound from './middleware/not-found.js'
 import errorHandler from './middleware/error-handler.js'
 
@@ -16,7 +17,7 @@ app
   .use(express.static('./public'))
   .use(express.json())
   .use('/api/v1/auth', authRouter)
-  .use('/api/v1/jobs', jobsRouter)
+  .use('/api/v1/jobs', authenticateUser, jobsRouter)
   .use(notFound)
   .use(errorHandler)
 
