@@ -1,7 +1,6 @@
 import User from '../models/user.js'
 import { StatusCodes } from 'http-status-codes'
-import { BadRequestError } from '../errors/index.js'
-import jwt from 'jsonwebtoken'
+import { BadRequestError, UnauthenticatedError } from '../errors/index.js'
 
 const register = async (req, res) => {
   console.log(req.body)
@@ -12,12 +11,22 @@ const register = async (req, res) => {
   // }
 
   const user = await User.create(req.body)
-  const token = user.createJWT()
-  res.status(StatusCodes.CREATED).json({ user: { name: user.name}, token })
+  res.status(StatusCodes.CREATED).json({ user: { name: user.name}, token: user.createJWT() })
 }
 
 const login = async (req, res) => {
-  res.send('login user')
+  const { email, password } = req.body
+  if (!email || !password) {
+    throw new BadRequestError('Email and password are required')
+  }
+  const user = await User.findOne({ email })
+  if (!user) throw new UnauthenticatedError('invaild credentials')
+  const passwordIsCorrect = await user.comparePassword(password)
+  if (passwordIsCorrect) {
+    return res.status(StatusCodes.OK).json({ user: { name: user.name }, token: user.createJWT() })
+  } else {
+    throw new UnauthenticatedError('invalid credentials')
+  }
 }
 
 export { register, login }
