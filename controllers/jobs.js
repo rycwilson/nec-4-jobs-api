@@ -1,25 +1,27 @@
+import { StatusCodes } from 'http-status-codes'
 import Job from '../models/job.js'
-import ApiError from '../errors/custom-error.js'
+import { NotFoundError, UnauthenticatedError } from '../errors/index.js'
 
 const getAllJobs = async (req, res) => {
-  const jobs = await Job.find({})
-  res.status(200).json({ jobs })
+  const jobs = await Job.find({ createdBy: req.user.userId }).sort('createdAt')
+  res.status(StatusCodes.OK).json({ jobs, count: jobs.length })
 }
 
 const createJob = async (req, res) => {
-  res.json(req.user)
-  // const job = await job.create(req.body)
-  // res.status(201).json({ job })
+  req.body.createdAt = req.user.userId
+  const job = await Job.create(req.body)
+  res.status(StatusCodes.CREATED).json({ job })
 }
 
 const getJob = async (req, res) => {
-  const { id: jobId } = req.params
-  const job = await Job.findOne({ _id: jobId })
+  const { user: { userId }, params: { id: jobId }} = req
+  const job = await Job.findOne({ _id: jobId, createdBy: userId }).select('-createdAt -updatedAt') 
   if (!job) {
-    // return res.status(404).json({ "error": `No job with id ${jobId}` })
-    throw new ApiError(`No job with id: ${jobId}`, 404)
+    throw new NotFoundError(`No job with id: ${jobId}`, 404)
+  // } else if (userId !== job.createdBy.toString()) {
+  //   throw new UnauthenticatedError('Not authorized to access this data')
   } else {
-    res.status(200).json({ job })
+    res.status(StatusCodes.OK).json({ job })
   }
 }
 
