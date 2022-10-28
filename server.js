@@ -1,7 +1,14 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import connectDb from './config/db.js'
 import 'express-async-errors'
+
+// security packages
+import helmet from 'helmet'
+import cors from 'cors'
+import xss from 'xss-clean'
+import rateLimiter from 'express-rate-limit'
+
+import connectDb from './config/db.js'
 import authRouter from './routes/auth.js'
 import jobsRouter from './routes/jobs.js'
 import authenticateUser from './middleware/auth.js'
@@ -14,8 +21,16 @@ const app = express()
 dotenv.config()
 
 app
-  .use(express.static('./public'))
+  .set('trust proxy', 1)  // (for heroku deploy) https://www.npmjs.com/package/express-rate-limit#user-content-troubleshooting-proxy-issues
+  .use(
+    rateLimiter({
+      windowMs: 15 * 60 * 1000,   // 15 mins
+      max: 100,   // limit each IP to 100 requests per windowMs
+    }
+  ))
   .use(express.json())
+  .use(helmet())
+  .use(cors())
   .use('/api/v1/auth', authRouter)
   .use('/api/v1/jobs', authenticateUser, jobsRouter)
   .use(notFound)
