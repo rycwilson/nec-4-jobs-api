@@ -21,6 +21,7 @@ const app = express()
 dotenv.config()
 
 app
+  .get('/', (req, res) => res.send('jobs api'))   // just a sanity check
   .set('trust proxy', 1)  // (for heroku deploy) https://www.npmjs.com/package/express-rate-limit#user-content-troubleshooting-proxy-issues
   .use(
     rateLimiter({
@@ -41,6 +42,8 @@ connectDb(`${process.env.MONGO_URI}/${appName}`)
   .catch(err => console.log(`Error connecting to database: ${err.message}`))
 
 function start() {
+
+  // for heroku deployment, make sure process.env.PORT is specified
   const port = process.env.PORT || 8000
   app.listen(port, () => console.log(`${appName} server is listening on port ${port}...`))
 }

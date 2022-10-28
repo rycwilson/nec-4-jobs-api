@@ -1,14 +1,17 @@
 {
   "name": "nec-jobs-api",
   "version": "1.0.0",
+  "author": "",
   "description": "",
-  "main": "server.js",
   "type": "module",
+  "license": "ISC",
+  "main": "server.js",
   "scripts": {
     "start": "nodemon server.js -e html,js,css"
   },
-  "author": "",
-  "license": "ISC",
+  "engines": {
+    "node": "16.x"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
