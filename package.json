@@ -9,9 +9,6 @@
   "scripts": {
     "start": "nodemon server.js -e html,js,css"
   },
-  "engines": {
-    "node": "16.x"
-  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -31,5 +28,8 @@
   },
   "devDependencies": {
     "nodemon": "^2.0.9"
+  },
+  "engines": {
+    "node": "16.x"
   }
 }
