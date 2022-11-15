@@ -1,3 +1,7 @@
+This README is from the course author
+
+<hr>
+
 #### Setup
 
 ```bash
